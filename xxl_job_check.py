@@ -5,7 +5,18 @@ import os, MySQLdb, sys
     first : a txt parameter from jenkins is saved as a temporary file
     then  : this script will read these info
     last  : display the different 
-    [taskId],[cron],[cmd],
+    [taskId],[cron],[cmd],  
+    
+    prepare:
+       jenkins job:
+       mkdir -p /tmp/[env]_xxl_job_review
+       chmod -R 777 /tmp/[env]_xxl_job_review
+       echo ${cron_list} > /tmp/[env]_xxl_job_review/xxl_job_review
+       /usr/bin/python /opt/scripts/[env]_xxl_job_check.py
+    
+    notice:
+       jenkins will only keep a space between word A and word B
+       IS "," NOT "，"
 '''
 
 # exec_sql
@@ -34,8 +45,8 @@ def diff_cron(id, cron, croncmd, host, user, passwd, database, env):
     print("taskID: ", id, "select_result  :", result)
     print("taskID: ", id, "xxl_config_cron:", result[0][4][2:-2] + " *")
     xxl_config_cron = result[0][4][2:-2] + " *"
-    print("taskID: ", id, "xxl_config_cmd :", result[0][9][12:-1])
-    xxl_config_cmd = result[0][9][12:-1]
+    print("taskID: ", id, "xxl_config_cmd :", result[0][9][12:])
+    xxl_config_cmd = result[0][9][12:]
     print("taskID: ", id, "xxl_job_author :", result[0][5])
     print("taskID: ", id, "xxl_job_alarm  :", result[0][6])
     print("taskID: ", id, "xxl_job_desc   :", result[0][2])
@@ -44,7 +55,7 @@ def diff_cron(id, cron, croncmd, host, user, passwd, database, env):
     print("taskID: ", id, "xxl_job_block  :", result[0][8])
 
     # diff cron
-    if xxl_config_cron != cron:
+    if xxl_config_cron != cron.strip():
         print("##############################################")
         print("\n" + "    " + "taskID: " + id + " the cron is different" + "\n")
         print("##############################################")
@@ -52,7 +63,7 @@ def diff_cron(id, cron, croncmd, host, user, passwd, database, env):
         with open(cron_list_file, 'a+') as list_cron:
             list_cron.write("taskID: " + id + " the cron is different" + "\n")
     # diff cmd
-    if xxl_config_cmd != croncmd:
+    if xxl_config_cmd != croncmd.strip():
         print("##############################################")
         print("\n" + "    " + "taskID: " + id + " the command is different" + "\n")
         print("##############################################")
@@ -76,7 +87,7 @@ def diff_cron(id, cron, croncmd, host, user, passwd, database, env):
         with open(cron_list_file, 'a+') as list_block:
             list_block.write("taskID: " + id + " the block strategy should be SERIAL_EXECUTION" + "\n")
     # check describe info
-    if result[0][2] != result[0][3] or result[0][2].lower().startswith(env + "_"):
+    if result[0][2] != result[0][3] or result[0][2].lower().startswith(env + "_") is False:
         print("##############################################")
         print("\n" + "    " + "taskID: " + id + " the describe info is different " + "eg: " + env + "_" + "projectname_funcion" + "\n")
         print("##############################################")
@@ -100,7 +111,8 @@ user = "xxx"
 database = "xxx"
 passwd = "xxx"
 host = "xxx"
-xxl_dir = "/tmp/xxl_job_review"
+
+xxl_dir = "/tmp/" + env + "_xxl_job_review"
 os.environ['xxl_dir'] = xxl_dir
 cron_lines = int(os.popen("cat $xxl_dir/xxl_job_review | awk -F\",\" '{print NF}'").read())
 
