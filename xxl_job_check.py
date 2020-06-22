@@ -106,7 +106,7 @@ def diff_cron(id, cron, croncmd, host, user, passwd, database, env):
             list_same.write("taskID: " + id + " the describe info is already exist" + "\n")
 
 # input cron from jenkins txt parameter
-env = "Dev"
+env = "dev"
 user = "xxx"
 database = "xxx"
 passwd = "xxx"
