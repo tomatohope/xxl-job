@@ -45,8 +45,8 @@ def diff_cron(id, cron, croncmd, host, user, passwd, database, env):
     print("taskID: ", id, "select_result  :", result)
     print("taskID: ", id, "xxl_config_cron:", result[0][4][2:-2] + " *")
     xxl_config_cron = result[0][4][2:-2] + " *"
-    print("taskID: ", id, "xxl_config_cmd :", result[0][9][12:])
-    xxl_config_cmd = result[0][9][12:]
+    print("taskID: ", id, "xxl_config_cmd :", result[0][9][12:].replace("\n", ""))
+    xxl_config_cmd = result[0][9][12:].replace("\n", "")
     print("taskID: ", id, "xxl_job_author :", result[0][5])
     print("taskID: ", id, "xxl_job_alarm  :", result[0][6])
     print("taskID: ", id, "xxl_job_desc   :", result[0][2])
