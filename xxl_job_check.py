@@ -16,7 +16,7 @@ import os, MySQLdb, sys
     
     notice:
        jenkins will only keep a space between word A and word B
-       IS "," NOT "，"
+       English comma
 '''
 
 # exec_sql
